@@ -59,7 +59,7 @@ async function message(msg) {
 async function roomJoin(room, inviteeList, inviter) {
     const roomTopic = await room.topic();
     if(roomTopic === '前端桃园'){
-        inviteeList.forEach(c => {
+        inviteeList.forEach(async c => {
             await room.say(welcome.data, c)
         });
     }
