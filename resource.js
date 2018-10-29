@@ -53,7 +53,6 @@ const resource = {
         关于程序员读书-大牛们的书单汇总: https://github.com/helloqingfeng/Awsome-Front-End-learning-resource/tree/master/11-about-reading
         Web前端开发规范文档: https://github.com/helloqingfeng/Awsome-Front-End-learning-resource/tree/master/25-web-develop-standard-master
      `
-
 }
 
 export default resource;

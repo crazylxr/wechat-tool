@@ -13,6 +13,10 @@ $ cd wechat-tool && npm install
 & node main.js
 ```
 ## 快速开始
+有三个文件需要更改：
+- config.js 里更改 roomTopic ,这个是你需要管理的群名
+- resource.js 里需要更改关键词回复的内容，js 对象形式
+- welecome.js 欢迎语配置
 ## 功能列表
 - 设置资源关键字
 - 根据资源关键字在群内回复

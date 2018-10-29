@@ -3,6 +3,7 @@ const {
 } = require('wechaty') // import { Wechaty } from 'wechaty'
 import resource from './resource'
 import welcome from './welcome'
+import { roomTopic as staticTopic } from './config'
 
 const bot = Wechaty.instance() // Global Instance
 
@@ -25,6 +26,10 @@ function login(user) {
     console.log(`User ${user} logined`)
 }
 
+/**
+ * @description 消息处理函数
+ * @param {} msg 
+ */
 async function message(msg) {
     const concat = msg.from();
     const content = msg.content();
@@ -32,8 +37,7 @@ async function message(msg) {
 
     const roomTopic = await room.topic();
 
-    // 如果调用 call:react 就返回 react 资料
-    if (/call:(.*)/.test(content) && room && roomTopic === '前端桃园') {
+    if (/call:(.*)/.test(content) && room && roomTopic === staticTopic) {
         let keyroom = await bot.Room.find({
             topic: roomTopic
         })
@@ -58,7 +62,7 @@ async function message(msg) {
  */
 async function roomJoin(room, inviteeList, inviter) {
     const roomTopic = await room.topic();
-    if(roomTopic === '前端桃园'){
+    if(roomTopic === staticTopic){
         inviteeList.forEach(async c => {
             await room.say(welcome.data, c)
         });
