@@ -3,7 +3,10 @@ const {
 } = require('wechaty') // import { Wechaty } from 'wechaty'
 import resource from './resource'
 import welcome from './welcome'
-import { roomTopic as staticTopic } from './config'
+import {
+    roomTopic as staticTopic,
+    autoRoomTopic
+} from './config'
 
 const bot = Wechaty.instance() // Global Instance
 
@@ -31,26 +34,45 @@ function login(user) {
  * @param {} msg 
  */
 async function message(msg) {
-    const concat = msg.from();
-    const content = msg.content();
-    const room = msg.room();
+    const concact = msg.from()
+    const content = msg.text()
+    const room = msg.room()
 
-    const roomTopic = await room.topic();
+    if (room) {
+        const roomTopic = await room.topic()
 
-    if (/call:(.*)/.test(content) && room && roomTopic === staticTopic) {
-        let keyroom = await bot.Room.find({
-            topic: roomTopic
-        })
-        if (keyroom) {
-            const r = /call:(.*)/.exec(content)[1];
-            if(resource[r]) {
-                await keyroom.say(resource[r], concat);
+        // 管理群，根据关键词自动回复
+        if (/call:(.*)/.test(content) && room && roomTopic === staticTopic) {
+            let keyroom = await bot.Room.find({
+                topic: roomTopic
+            })
+            if (keyroom) {
+                const r = /call:(.*)/.exec(content)[1]
+                if (resource[r]) {
+                    await keyroom.say(resource[r], concact)
+                }
             }
         }
     }
 
+    // 根据‘加群’自动拉人
+    if (/加群/.test(content) && !room) {
+        const keyroom = await bot.Room.find({
+            topic: autoRoomTopic
+        })
+        console.log(concact.name())
+        console.log(keyroom.topic())
+        try {
+            console.log(await keyroom.add(concact)) 
+        } catch (error) {
+            console.log(error)
+        }
+        await keyroom.say(welcome.data, concact)
+    }
+
+
     if (room) {
-        console.log(`Room:${await room.topic()} Concact ${concat.name() }Content: ${content}`)
+        console.log(`Room:${await room.topic()} Concact ${concact.name() }Content: ${content}`)
     }
 }
 
@@ -62,7 +84,7 @@ async function message(msg) {
  */
 async function roomJoin(room, inviteeList, inviter) {
     const roomTopic = await room.topic();
-    if(roomTopic === staticTopic){
+    if (roomTopic === staticTopic) {
         inviteeList.forEach(async c => {
             await room.say(welcome.data, c)
         });
